@@ -65,69 +65,6 @@ class Animator
     isRunning(){return this.running;}
 }
 
-
-// PRODUCT CAROUSEL
-// Rotates product images to simulate 360° product viewer.
-class ImageCarousel
-{
-    constructor({ image, prev, next, play, pause, frames, path })
-    {        
-        this.image = image; // image element displaying the product        
-        this.frames = frames; // number of images in the rotation        
-        this.path = path; // file path prefix for images        
-        this.frame = 1; // current frame index        
-        this.direction = 1; // spin direction (1 forward, -1 backward)        
-        this.timer = 0; // accumulates delta time for frame timing        
-        this.buttons = [prev, next]; // carousel direction buttons        
-        this.animator = new Animator((delta) => this.spin(delta), play, pause); // animation engine instance
-
-        // button controls
-        prev.onclick = () => this.setDirection(1, prev);
-        next.onclick = () => this.setDirection(-1, next);
-
-        // play control
-        play.onclick = () =>
-        {
-            this.animator.start();
-            const btnToHighlight =
-                this.direction === 1 ? this.buttons[0] : this.buttons[1];
-
-            setActive(this.buttons, btnToHighlight);
-        };
-        
-        pause.onclick = () => this.animator.stop(); // pause control
-        togglePlayPause(false, play, pause);
-    }
-
-    // Changes rotation direction and activates animation.
-    setDirection(dir, btn)
-    {        
-        this.direction = dir; // rotation direction        
-        setActive(this.buttons, btn); // button that was pressed
-        this.animator.start();
-    }
-
-    // Advances the product image frame when the timer exceeds the frame delay.
-    spin(delta)
-    {
-        if (!this.animator.isRunning()) return;
-        this.timer += delta; // accumulate elapsed time
-
-        if (this.timer > 0.1)
-        {
-            this.timer = 0;            
-            this.frame += this.direction; // move to next frame
-
-            // wrap frame index
-            if (this.frame > this.frames) this.frame = 1;
-            if (this.frame < 1) this.frame = this.frames;
-           
-            this.image.src = `${this.path}${this.frame}.jpg`; // update image
-        }
-    }
-}
-
-
 // PACMAN GAME
 // Controls movement, direction, controls, and collision for the pacman animation.
 class PacmanGame
@@ -305,18 +242,6 @@ class PacmanGame
 
 
 // INITIALIZATION
-// Create new Product Carousel
-new ImageCarousel(
-{
-    image: document.getElementById("product-image"),
-    prev: document.getElementById("btn-product-previous"),
-    next: document.getElementById("btn-product-next"),
-    play: document.getElementById("btn-product-play"),
-    pause: document.getElementById("btn-product-pause"),
-    frames: 34,
-    path: "../images/product/bike-"
-});
-
 // Create new Pac-Man Game
 new PacmanGame(
 {

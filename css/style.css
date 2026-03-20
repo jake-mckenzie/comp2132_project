@@ -267,7 +267,15 @@ textarea:focus-visible {
 }
 
 /* Card components & grid */
+.card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
 .card {
+    flex: 1;
+    margin: auto;
     background: var(--card-bg);
     border-radius: var(--radius-lg);
     border: 2px solid var(--border-subtle);
@@ -282,12 +290,6 @@ textarea:focus-visible {
     transform: none;
     box-shadow: 0 18px 38px rgba(0, 0, 0, 0.75);
     border-color: var(--accent-soft);
-}
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(230px, 1fr));
-    gap: 0.75rem;
 }
 
 .card h3 {
@@ -693,7 +695,6 @@ ol.snazzy-list li::marker {
 
 .site-shell {
     max-width: 1024px;
-    margin: 0 auto;
     padding: 0 0.75rem 2.5rem;
 }
 /* ----------------
@@ -768,6 +769,10 @@ ol.snazzy-list li::marker {
 /* ----------------
    PACMAN DISPLAY
 ------------------- */
+#article-arcade {
+    width: 100%;
+}
+
 #pacman-display {
     background-color: #020308;
     border: 2px solid var(--accent);
@@ -890,36 +895,25 @@ ol.snazzy-list li::marker {
     }
 }
 
-@media (min-width: 650px) {
+@media (min-width: 750px) {
+    main {
+        margin: auto;
+    }
+
     .hero {
         padding: 2rem 1.5rem;
         grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     }
 
-    .card-grid {
+    /* .card-grid {
         grid-template-columns: repeat(2, minmax(230px, 1fr));
-    }
+    } */
 
     #pacman-display,#pacman-container {
         width: 100%;
         max-width: 280px;
         height: 15rem;
         max-height: 280px;
-    }
-}
-
-
-@media (min-width: 820px) {
-    #product-carousel img {
-        max-width: 375px;
-
-    }
-
-    #pacman-display,#pacman-container {
-        width: 100%;
-        max-width: 300px;
-        height: 16rem;
-        max-height: 300px;
     }
 }
 
@@ -939,11 +933,6 @@ ol.snazzy-list li::marker {
         max-height: 260px;
     }
 
-    #product-carousel img {
-        max-width: 425px;
-
-    }
-
     #pacman-display,#pacman-container {
         width: 100%;
         max-width: 350px;
@@ -953,11 +942,6 @@ ol.snazzy-list li::marker {
 }
 
 @media (min-width: 1024px) {
-    #product-carousel img {
-        max-width: 450px;
-
-    }
-
     #pacman-display,#pacman-container {
         width: 100%;
         max-width: 375px;
