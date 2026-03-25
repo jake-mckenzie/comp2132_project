@@ -1,80 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic page setup -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMP 2132 | Final Project</title>
-    <!--Favicon-->
-    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
-    <link rel="manifest" href="../favicon/site.webmanifest">
-    <!--Stylesheet-->
-    <link rel="stylesheet" href="../css/style.css">
-    <!--Scripts-->
-    <script src="https://kit.fontawesome.com/52ab2f7a77.js" crossorigin="anonymous" defer></script>
-    <script src="../scripts/finalproject.js" defer></script>
+    <title>COMP 2132 | Final Project | Hangman</title>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- JavaScript -->
+    <script src="js/finalproject.js" defer></script>
 </head>
 <body>
     <header class="site-header">
         <div class="header-inner">
-            <div class="logo-area">
-                <a href="#" class="logo-link">
-                    <div class="logo-mark">JM</div>
-                    <div class="logo-text">
-                        <span class="project-name">COMP 2132 | Final Project</span>
-                    </div>
-                </a>
-            </div>
+            <h1>Hangman Game</h1>
         </div>
     </header>
-    <div id="wrapper">
-        <main class="site-shell">
-            <section class="hero">
-                <div>
-                    <h1>Final Project</h1>
-                </div>
-            </section>
-            <section class="section">
-                <div id="card-spacer" class="card-grid">
-                    <article id="article-arcade" class="card">
-                        <div id="pacman-display">
-                            <div id="pacman-container">
-                                <img id="pacman-model" src="../images/pacman/pac-man-static.gif" alt="pac-man-static">
-                            </div>
-                        </div>
-                        <div id="pacman-controls" class="controls">
-                            <div id="pacman-controller" class="control-panel">
-                                <h3>&#9856; Hangman &#9856;</h3>
-                                <div class="control-row">
-                                    <a id="btn-arrow-up"><i class="fa-solid fa-arrow-up"></i></a>
-                                </div>
-                                <div class="control-row">
-                                    <a id="btn-arrow-left"><i class="fa-solid fa-arrow-left"></i></a>
-                                    <a id="btn-arrow-down"><i class="fa-solid fa-arrow-down"></i></a>
-                                    <a id="btn-arrow-right"><i class="fa-solid fa-arrow-right"></i></a>
-                                </div>
-                                <div class="control-row">
-                                    <a id="btn-pacman-start"><i class="fa-solid fa-play"></i></a>
-                                    <a id="btn-pacman-stop"><i class="fa-solid fa-pause"></i></a>
-                                </div>
-                                <h3 class="card-meta">Controls:</h3>
-                                <ul class="snazzy-list"><li>UP: &#8593; or W</li></ul>
-                                <ul class="snazzy-list"><li>LEFT: &#8592; or A</li></ul>
-                                <ul class="snazzy-list"><li>RIGHT: &#8594; or D</li></ul>
-                                <ul class="snazzy-list"><li>DOWN: &#8595; or S</li></ul>
-                                <ul class="snazzy-list"><li>PLAY/PAUSE: &#9654;/&#x23F8; or X</li></ul>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-        </main>
-        <footer class="site-footer">
-            <div class="footer-inner">
-                <p class="footer-meta">&copy; <span>2026</span> COMP 2132 | Final Project</p>
+
+    <main class="site-shell">
+        <section class="card hangman-card">
+            <h2>Guess the Word</h2>
+            <p class="muted">
+                Enter one letter at a time. You can make up to 6 wrong guesses.
+            </p>
+
+            <div class="hangman-figure-wrap">
+                <img
+                    id="hangman-image"
+                    class="hangman-image fade-in"
+                    src="images/hangman-0.png"
+                    alt="Hangman drawing stage 0"
+                >
             </div>
-        </footer>
-    </div>
+
+            <div class="status-row">
+                <p><strong>Hint:</strong> <span id="hint-text">Loading...</span></p>
+                <p><strong>Wrong Guesses:</strong> <span id="wrong-count">0</span> / 6</p>
+            </div>
+
+            <div id="word-display" class="word-display">_ _ _ _ _</div>
+
+            <div class="guess-panel">
+                <label for="letter-input">Enter a Letter</label>
+                <div class="guess-controls">
+                    <input type="text" id="letter-input" maxlength="1" autocomplete="off">
+                    <button id="guess-button" class="btn btn-primary" type="button">Guess</button>
+                    <button id="play-again-button" class="btn btn-ghost" type="button">Play Again</button>
+                </div>
+            </div>
+
+            <div class="game-meta">
+                <p><strong>Guessed Letters:</strong> <span id="guessed-letters">None yet</span></p>
+                <p id="message-area" class="message-area">Start guessing!</p>
+            </div>
+        </section>
+
+        <section class="card keyboard-card">
+            <h2>Letter Board</h2>
+            <div id="letter-board" class="letter-board"></div>
+        </section>
+    </main>
 </body>
 </html>

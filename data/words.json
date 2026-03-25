@@ -1,0 +1,34 @@
+[
+    {
+        "word": "javascript",
+        "hint": "A programming language used to make web pages interactive."
+    },
+    {
+        "word": "browser",
+        "hint": "Software used to visit websites."
+    },
+    {
+        "word": "cascade",
+        "hint": "The C in CSS stands for this."
+    },
+    {
+        "word": "variable",
+        "hint": "A named storage location in programming."
+    },
+    {
+        "word": "function",
+        "hint": "A reusable block of code."
+    },
+    {
+        "word": "hangman",
+        "hint": "The name of this word guessing game."
+    },
+    {
+        "word": "object",
+        "hint": "A JavaScript structure that stores related data and behavior."
+    },
+    {
+        "word": "network",
+        "hint": "The internet is a global one of these."
+    }
+]

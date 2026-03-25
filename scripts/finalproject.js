@@ -1,262 +1,478 @@
-// UI UTILITIES
-// Removes the "active" class from all buttons in a list, then applies it to the selected button.
-function setActive(buttons, active)
-{    
-    buttons.forEach(b => b.classList.remove("active")); // array of button elements to clear    
-    if (active) active.classList.add("active"); // button that should receive the active highlight
-}
+"use strict";
 
-// Shows either the play button or pause button depending on whether the animation is currently running.
-function togglePlayPause(running, playBtn, pauseBtn)
-{    
-    playBtn.classList.toggle("hide", running); // boolean indicating animation state
-    pauseBtn.classList.toggle("hide", !running); // boolean indicating animation state
-}
+/*
+    COMP 2132 Assignment 08
+    Hangman Game
+
+    This file controls the full Hangman game:
+    - loading words from a JSON file
+    - starting and resetting the game
+    - handling guesses
+    - updating the display
+    - checking for win/loss conditions
+*/
 
 
-// ANIMATION ENGINE
-// Reusable animation loop controller for both the carousel and Pacman
-class Animator
+// -------------------------
+// GAME DATA OBJECT
+// -------------------------
+
+/*
+    game
+    This object stores all game data and settings in one place.
+*/
+const game =
 {
-    constructor(loop, playBtn, pauseBtn)
-    {        
-        this.loop = loop; // function to run every frame        
-        this.playBtn = playBtn; // button used to start animation        
-        this.pauseBtn = pauseBtn; // button used to stop animation        
-        this.running = false;// tracks whether animation is active        
-        this.frame = null; // stores requestAnimationFrame ID        
-        this.lastTime = 0; // timestamp of previous frame
-        togglePlayPause(false, playBtn, pauseBtn);
-    }
+    // words
+    // Array of word/hint objects loaded from the JSON file.
+    words: [],
 
-    // Begins the animation loop.
-    start()
-    {
-        if (!this.running)
+    // selectedWord
+    // The current word the player is trying to guess.
+    selectedWord: "",
+
+    // selectedHint
+    // The hint that matches the selected word.
+    selectedHint: "",
+
+    // correctLetters
+    // Array of correctly guessed letters.
+    correctLetters: [],
+
+    // wrongLetters
+    // Array of incorrectly guessed letters.
+    wrongLetters: [],
+
+    // maxWrong
+    // Maximum number of wrong guesses allowed before the player loses.
+    maxWrong: 6,
+
+    // isOver
+    // Tracks whether the current game has ended.
+    isOver: false,
+
+    // hangmanImages
+    // Array of image file paths for each hangman stage.
+    hangmanImages:
+    [
+        "images/hangman-0.png",
+        "images/hangman-1.png",
+        "images/hangman-2.png",
+        "images/hangman-3.png",
+        "images/hangman-4.png",
+        "images/hangman-5.png",
+        "images/hangman-6.png"
+    ]
+};
+
+
+// -------------------------
+// PAGE ELEMENTS
+// -------------------------
+
+// wordDisplay
+// The page element that shows the hidden word with guessed letters revealed.
+const wordDisplay = document.getElementById("word-display");
+
+// hintText
+// The page element that displays the hint for the current word.
+const hintText = document.getElementById("hint-text");
+
+// wrongCount
+// The page element that displays the number of wrong guesses.
+const wrongCount = document.getElementById("wrong-count");
+
+// guessedLettersText
+// The page element that shows all letters the player has guessed.
+const guessedLettersText = document.getElementById("guessed-letters");
+
+// messageArea
+// The page element used to show feedback messages to the player.
+const messageArea = document.getElementById("message-area");
+
+// hangmanImage
+// The page element that displays the current hangman image.
+const hangmanImage = document.getElementById("hangman-image");
+
+// letterInput
+// The text input where the player types a letter guess.
+const letterInput = document.getElementById("letter-input");
+
+// guessButton
+// The button the player clicks to submit a typed letter guess.
+const guessButton = document.getElementById("guess-button");
+
+// playAgainButton
+// The button the player clicks to reset the game and begin a new round.
+const playAgainButton = document.getElementById("play-again-button");
+
+// letterBoard
+// The container that holds the clickable A-Z letter buttons.
+const letterBoard = document.getElementById("letter-board");
+
+
+// -------------------------
+// FUNCTIONS
+// -------------------------
+
+/*
+    loadWords()
+    This function loads the word and hint data from the JSON file using fetch().
+    Once the JSON data is loaded, it stores the words in the game object,
+    creates the letter buttons, and starts the first game.
+*/
+function loadWords()
+{
+    fetch("data/words.json")
+        .then(function(response)
         {
-            this.running = true;            
-            this.lastTime = performance.now(); // record time so delta can be calculated            
-            this.frame = requestAnimationFrame(this.animate.bind(this)); // start animation frame cycle
+            if (!response.ok)
+            {
+                throw new Error("Could not load words.json");
+            }
+
+            return response.json();
+        })
+        .then(function(data)
+        {
+            game.words = data;
+            createLetterButtons();
+            startNewGame();
+        })
+        .catch(function(error)
+        {
+            console.error(error);
+            messageArea.textContent = "Game data could not be loaded.";
+            guessButton.disabled = true;
+            letterInput.disabled = true;
+        });
+}
+
+/*
+    startNewGame()
+    This function resets the game state and starts a brand new round.
+    It chooses a random word and hint, clears previous guesses,
+    resets the display, and enables the controls again.
+*/
+function startNewGame()
+{
+    const randomIndex = Math.floor(Math.random() * game.words.length);
+    const randomEntry = game.words[randomIndex];
+
+    game.selectedWord = randomEntry.word.toLowerCase();
+    game.selectedHint = randomEntry.hint;
+    game.correctLetters = [];
+    game.wrongLetters = [];
+    game.isOver = false;
+
+    hintText.textContent = game.selectedHint;
+    wrongCount.textContent = "0";
+    guessedLettersText.textContent = "None yet";
+    messageArea.textContent = "Start guessing!";
+    letterInput.value = "";
+    letterInput.disabled = false;
+    guessButton.disabled = false;
+
+    resetLetterButtons();
+    updateWordDisplay();
+    updateHangmanImage();
+    letterInput.focus();
+}
+
+/*
+    updateWordDisplay()
+    This function updates the word area on the page.
+    It shows correctly guessed letters in their proper positions,
+    and shows underscores for letters that have not been guessed yet.
+*/
+function updateWordDisplay()
+{
+    let display = "";
+
+    for (let i = 0; i < game.selectedWord.length; i++)
+    {
+        const currentLetter = game.selectedWord[i];
+
+        if (game.correctLetters.includes(currentLetter))
+        {
+            display += currentLetter.toUpperCase() + " ";
         }
-
-        togglePlayPause(true, this.playBtn, this.pauseBtn);
+        else
+        {
+            display += "_ ";
+        }
     }
 
-    // Stops the animation loop.
-    stop()
-    {
-        this.running = false;
-        cancelAnimationFrame(this.frame);
-        togglePlayPause(false, this.playBtn, this.pauseBtn);
-    }
-
-    // Internal frame loop that calculates time delta
-    // and calls the supplied animation function.
-    animate(time)
-    {
-        if (!this.running) return;        
-        const delta = (time - this.lastTime) / 1000; // seconds since last frame
-        this.lastTime = time;        
-        this.loop(delta); // execute animation logic        
-        this.frame = requestAnimationFrame(this.animate.bind(this)); // request next frame
-    }
-
-    // Returns current animation state.
-    isRunning(){return this.running;}
+    wordDisplay.textContent = display.trim();
 }
 
-// PACMAN GAME
-// Controls movement, direction, controls, and collision for the pacman animation.
-class PacmanGame
+/*
+    updateHangmanImage()
+    This function updates the hangman image based on the number of wrong guesses.
+    It also restarts the fade-in animation each time the image changes.
+*/
+function updateHangmanImage()
 {
-    constructor(config)
-    {        
-        this.display = config.display; // display - clickable game display area        
-        this.container = config.container; // container - movement boundary area        
-        this.model = config.model; // model - Pac-Man image element        
-        this.playImg = config.playImg; // playImg - animated Pac-Man sprite        
-        this.pauseImg = config.pauseImg; // pauseImg - static Pac-Man sprite        
-        this.arrowButtons = config.arrows;// arrowButtons - direction control buttons
+    const imageIndex = game.wrongLetters.length;
+    hangmanImage.src = game.hangmanImages[imageIndex];
 
-        // animation engine for movement
-        this.animator =
-            new Animator((delta) => this.move(delta), config.playBtn, config.stopBtn);        
-        this.x = 0; // horizontal position        
-        this.y = 0; // vertical position        
-        this.dx = 1; // horizontal movement direction        
-        this.dy = 0; // vertical movement direction        
-        this.nextDirection = null; // queued direction change        
-        this.speed = 120; // pixels per second        
-        this.started = false; // tracks first start state
+    hangmanImage.classList.remove("fade-in");
+    void hangmanImage.offsetWidth;
+    hangmanImage.classList.add("fade-in");
+}
 
-        // Defines movement vectors and CSS classes for each direction.
-        this.directionMap =
-        {
-            up: { dx: 0, dy: -1, class: "pacman-face-up" },
-            down: { dx: 0, dy: 1, class: "pacman-face-down" },
-            left: { dx: -1, dy: 0, class: "pacman-face-left" },
-            right: { dx: 1, dy: 0, class: "pacman-face-right" }
-        };
+/*
+    updateGuessedLetters()
+    This function displays all guessed letters on the page.
+    It combines correct and wrong guesses into one list and sorts them alphabetically.
+*/
+function updateGuessedLetters()
+{
+    const allLetters = game.correctLetters.concat(game.wrongLetters);
+    allLetters.sort();
 
-        this.model.className = "pacman-face-right";
-        this.model.src = this.pauseImg;
-        this.updateContainerBounds();
-        window.addEventListener("resize", () => this.updateContainerBounds());
-        this.initControls();
-    }
-
-    // Calculates movement limits based on container size.
-    updateContainerBounds()
+    if (allLetters.length === 0)
     {
-        const rect = this.container.getBoundingClientRect();       
-        this.maxX = rect.width - this.model.offsetWidth; // right boundary        
-        this.maxY = rect.height - this.model.offsetHeight; // bottom boundary
+        guessedLettersText.textContent = "None yet";
     }
-
-    // Connects UI buttons and keyboard controls.
-    initControls()
+    else
     {
-        Object.entries(this.arrowButtons).forEach(([dir, btn]) =>
+        guessedLettersText.textContent = allLetters.join(", ").toUpperCase();
+    }
+}
+
+/*
+    createLetterButtons()
+    This function creates the clickable A-Z buttons shown in the letter board.
+    Each button sends its letter to processGuess() when clicked.
+*/
+function createLetterButtons()
+{
+    letterBoard.innerHTML = "";
+
+    for (let i = 65; i <= 90; i++)
+    {
+        const letter = String.fromCharCode(i).toLowerCase();
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "letter-button";
+        button.textContent = letter.toUpperCase();
+        button.dataset.letter = letter;
+
+        button.addEventListener("click", function()
         {
-            btn.onclick = () => this.queueDirection(dir);
+            processGuess(letter);
         });
 
-        this.animator.playBtn.onclick = () => this.start();
-        this.animator.pauseBtn.onclick = () => this.stop();
-        this.display.onclick = () =>
-        {
-            this.animator.isRunning() ? this.stop() : this.start();
-        };
-
-        document.addEventListener("keydown", e => this.handleKeys(e));
-    }
-
-    // Starts the Pac-Man movement animation.
-    start()
-    {
-        this.nextDirection = null;
-
-        if (!this.started)
-        {
-            this.started = true;
-            setActive(
-                Object.values(this.arrowButtons),
-                this.arrowButtons.right
-            );
-        }
-
-        this.model.src = this.playImg;
-        this.animator.start();
-    }
-
-    // Stops Pac-Man movement.
-    stop()
-    {
-        this.model.src = this.pauseImg;
-        this.animator.stop();
-    }
-
-    // Stores the next direction to be applied on the next animation frame.
-    queueDirection(direction)
-    {
-        this.nextDirection = direction;
-        setActive(
-            Object.values(this.arrowButtons),
-            this.arrowButtons[direction]
-        );
-
-        if (!this.animator.isRunning())
-        {
-            this.start();
-            this.setDirection(direction);
-            this.nextDirection = null;
-        }
-    }
-
-    // Applies a direction vector and updates pacman img orientation.
-    setDirection(direction)
-    {
-        const dir = this.directionMap[direction];
-
-        this.dx = dir.dx;
-        this.dy = dir.dy;
-
-        if (this.dx !== 0) this.dy = 0;
-        if (this.dy !== 0) this.dx = 0;
-
-        this.model.className = dir.class;
-    }
-
-    // Process keyboard input for movement and start/stop commands.
-    handleKeys(e)
-    {
-        const map =
-        {
-            ArrowUp: "up", w: "up",
-            ArrowDown: "down", s: "down",
-            ArrowLeft: "left", a: "left",
-            ArrowRight: "right", d: "right"
-        };
-
-        if (map[e.key])
-        {
-            e.preventDefault();
-            this.queueDirection(map[e.key]);
-        }
-
-        if (e.key === "x" || e.key === "X")
-        {
-            e.preventDefault();
-            this.animator.isRunning()
-                ? this.stop()
-                : this.start();
-        }
-    }
-
-    // Updates Pac-Man position and handles boundary collision with bouncing.
-    move(delta)
-    {
-        if (!this.animator.isRunning()) return;
-
-        if (this.nextDirection)
-        {
-            this.setDirection(this.nextDirection);
-            this.nextDirection = null;
-        }
-
-        this.x += this.dx * this.speed * delta; // update position
-        this.y += this.dy * this.speed * delta; // update position        
-        this.x = Math.max(0, Math.min(this.x, this.maxX)); // clamp position to container bounds
-        this.y = Math.max(0, Math.min(this.y, this.maxY)); // clamp position to container bounds
-
-        // bounce from edges
-        if (this.x === 0 && this.dx < 0) this.setDirection("right");
-        if (this.x === this.maxX && this.dx > 0) this.setDirection("left");
-        if (this.y === 0 && this.dy < 0) this.setDirection("down");
-        if (this.y === this.maxY && this.dy > 0) this.setDirection("up");
-        
-        this.model.style.left = this.x + "px"; // apply position to element
-        this.model.style.top = this.y + "px"; // apply position to element
+        letterBoard.appendChild(button);
     }
 }
 
-
-// INITIALIZATION
-// Create new Pac-Man Game
-new PacmanGame(
+/*
+    resetLetterButtons()
+    This function re-enables all A-Z buttons for a new game
+    and removes their used styling.
+*/
+function resetLetterButtons()
 {
-    display: document.getElementById("pacman-display"),
-    container: document.getElementById("pacman-container"),
-    model: document.getElementById("pacman-model"),
-    playBtn: document.getElementById("btn-pacman-start"),
-    stopBtn: document.getElementById("btn-pacman-stop"),
-    playImg: "../images/pacman/pac-man-fast.gif",
-    pauseImg: "../images/pacman/pac-man-static.gif",
-    arrows:
+    const buttons = letterBoard.querySelectorAll(".letter-button");
+
+    buttons.forEach(function(button)
     {
-        up: document.getElementById("btn-arrow-up"),
-        down: document.getElementById("btn-arrow-down"),
-        left: document.getElementById("btn-arrow-left"),
-        right: document.getElementById("btn-arrow-right")
+        button.disabled = false;
+        button.classList.remove("used");
+    });
+}
+
+/*
+    disableLetterButton(letter)
+    This function disables one specific letter button after it has been guessed,
+    so the player cannot choose the same letter again in the same game.
+*/
+function disableLetterButton(letter)
+{
+    const button = letterBoard.querySelector('[data-letter="' + letter + '"]');
+
+    if (button)
+    {
+        button.disabled = true;
+        button.classList.add("used");
+    }
+}
+
+/*
+    disableAllLetters()
+    This function disables every letter button.
+    It is used when the game is over so the player cannot continue guessing.
+*/
+function disableAllLetters()
+{
+    const buttons = letterBoard.querySelectorAll(".letter-button");
+
+    buttons.forEach(function(button)
+    {
+        button.disabled = true;
+    });
+}
+
+/*
+    isValidLetter(letter)
+    This function checks whether the player's input is exactly one letter from A to Z.
+    It returns true for valid input and false for invalid input.
+*/
+function isValidLetter(letter)
+{
+    return /^[a-z]$/.test(letter);
+}
+
+/*
+    processGuess(letter)
+    This function handles the main game logic for one guessed letter.
+    It validates the input, checks whether the letter was already guessed,
+    adds the letter to the correct or wrong list, updates the display,
+    and then checks if the game has been won or lost.
+*/
+function processGuess(letter)
+{
+    if (game.isOver)
+    {
+        messageArea.textContent = "Game over. Click Play Again to start a new game.";
+        return;
+    }
+
+    if (!isValidLetter(letter))
+    {
+        messageArea.textContent = "Please enter one letter from A to Z.";
+        letterInput.value = "";
+        letterInput.focus();
+        return;
+    }
+
+    if (game.correctLetters.includes(letter) || game.wrongLetters.includes(letter))
+    {
+        messageArea.textContent = "You already guessed that letter.";
+        letterInput.value = "";
+        letterInput.focus();
+        return;
+    }
+
+    if (game.selectedWord.includes(letter))
+    {
+        game.correctLetters.push(letter);
+        messageArea.textContent = 'Good guess! "' + letter.toUpperCase() + '" is in the word.';
+    }
+    else
+    {
+        game.wrongLetters.push(letter);
+        messageArea.textContent = 'Sorry, "' + letter.toUpperCase() + '" is not in the word.';
+    }
+
+    disableLetterButton(letter);
+    updateWordDisplay();
+    updateHangmanImage();
+    updateGuessedLetters();
+    wrongCount.textContent = game.wrongLetters.length.toString();
+    checkGameOver();
+
+    letterInput.value = "";
+    letterInput.focus();
+}
+
+/*
+    checkGameOver()
+    This function checks whether the player has won or lost the game.
+    The player wins if every letter in the word has been guessed.
+    The player loses if the number of wrong guesses reaches the maximum allowed.
+*/
+function checkGameOver()
+{
+    let allFound = true;
+
+    for (let i = 0; i < game.selectedWord.length; i++)
+    {
+        if (!game.correctLetters.includes(game.selectedWord[i]))
+        {
+            allFound = false;
+            break;
+        }
+    }
+
+    if (allFound)
+    {
+        game.isOver = true;
+        messageArea.textContent = "You won the game!";
+        disableGameControls();
+        return;
+    }
+
+    if (game.wrongLetters.length >= game.maxWrong)
+    {
+        game.isOver = true;
+        wordDisplay.textContent = game.selectedWord.toUpperCase().split("").join(" ");
+        messageArea.textContent = 'You lost the game! The word was "' + game.selectedWord.toUpperCase() + '".';
+        disableGameControls();
+    }
+}
+
+/*
+    disableGameControls()
+    This function disables the text input, guess button, and all letter buttons.
+    It is called when the game ends so the player must click Play Again
+    before starting a new round.
+*/
+function disableGameControls()
+{
+    letterInput.disabled = true;
+    guessButton.disabled = true;
+    disableAllLetters();
+}
+
+
+// -------------------------
+// EVENT LISTENERS
+// -------------------------
+
+/*
+    Guess button click event
+    This event reads the typed letter from the input box
+    and sends it to processGuess().
+*/
+guessButton.addEventListener("click", function()
+{
+    const letter = letterInput.value.trim().toLowerCase();
+    processGuess(letter);
+});
+
+/*
+    Letter input keydown event
+    This event allows the player to press Enter
+    instead of clicking the Guess button.
+*/
+letterInput.addEventListener("keydown", function(event)
+{
+    if (event.key === "Enter")
+    {
+        const letter = letterInput.value.trim().toLowerCase();
+        processGuess(letter);
     }
 });
+
+/*
+    Play Again button click event
+    This event starts a brand new game when the player clicks Play Again.
+*/
+playAgainButton.addEventListener("click", function()
+{
+    startNewGame();
+});
+
+
+// -------------------------
+// START GAME
+// -------------------------
+
+/*
+    Start the game by loading the JSON word list.
+*/
+loadWords();
