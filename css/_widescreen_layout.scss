@@ -1,0 +1,25 @@
+/* -----------------
+   MEDIA QUERIES
+-------------------- */
+@media (min-width: 720px) {
+    .hero {
+        grid-template-columns: 1.4fr 1fr;
+        padding: 2rem 1.5rem;
+    }
+
+    .hangman-layout {
+        grid-template-columns: 1.4fr 1fr;
+        align-items: start;
+    }
+
+    .status-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 980px) {
+    .letter-board {
+        grid-template-columns: repeat(7, minmax(42px, 1fr));
+    }
+}
