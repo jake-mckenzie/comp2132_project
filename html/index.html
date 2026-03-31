@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic page setup -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMP 2132 | Final Project | Hangman</title>
+    <title>COMP 2132 | Final Project</title>
     <!--Favicon-->
     <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
@@ -19,52 +18,52 @@
 <body>
     <header class="site-header">
         <div class="header-inner">
-            <h1>Hangman Game</h1>
+            <div class="logo-area">
+                <a href="#" class="logo-link">
+                    <div class="logo-mark">JM</div>
+                    <div class="logo-text">
+                        <span class="project-name">COMP 2132 | Final Project</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </header>
-
-    <main class="site-shell">
-        <section class="card hangman-card">
-            <h2>Guess the Word</h2>
-            <p class="muted">
-                Enter one letter at a time. You can make up to 6 wrong guesses.
-            </p>
-
-            <div class="hangman-figure-wrap">
-                <img
-                    id="hangman-image"
-                    class="hangman-image fade-in"
-                    src="../images/hangman-0.png"
-                    alt="Hangman drawing stage 0"
-                >
-            </div>
-
-            <div class="status-row">
-                <p><strong>Hint:</strong> <span id="hint-text">Loading...</span></p>
-                <p><strong>Wrong Guesses:</strong> <span id="wrong-count">0</span> / 6</p>
-            </div>
-
-            <div id="word-display" class="word-display">_ _ _ _ _</div>
-
-            <div class="guess-panel">
-                <label for="letter-input">Enter a Letter</label>
-                <div class="guess-controls">
-                    <input type="text" id="letter-input" maxlength="1" autocomplete="off">
-                    <button id="guess-button" class="btn btn-primary" type="button">Guess</button>
+    <div id="wrapper">
+        <main class="site-shell">
+            <section class="card hangman-card">
+                <h2>Guess the Word</h2>
+                <p class="muted">Click a letter from the Letter Board below.</p>
+                <div class="hangman-figure-wrap">
+                    <img
+                        id="hangman-image"
+                        class="hangman-image fade-in"
+                        src="../images/hangman-0.png"
+                        alt="Hangman drawing stage 0">
+                </div>
+                <div class="status-row">
+                    <p><strong>Hint:</strong> <span id="hint-text">Loading...</span></p>
+                    <p><strong>Wrong Guesses:</strong> <span id="wrong-count">0</span> / 6</p>
+                </div>
+                <div id="word-display" class="word-display">_ _ _ _ _</div>
+                <div class="game-meta">
+                    <p><strong>Guessed Letters:</strong> <span id="guessed-letters">None yet</span></p>
+                    <p id="message-area" class="message-area">Start guessing!</p>
+                    <p class="muted">You can make up to 6 wrong guesses.</p>
+                </div>
+                <div class="keyboard-card">
+                    <h2>Letter Board</h2>
+                    <div id="letter-board" class="letter-board"></div>
+                </div>
+                <div class="guess-panel">
                     <button id="play-again-button" class="btn btn-ghost" type="button">Play Again</button>
                 </div>
+            </section>
+        </main>
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <p class="footer-meta">&copy; <span>2026</span> COMP 2132 | Final Project</p>
             </div>
-
-            <div class="game-meta">
-                <p><strong>Guessed Letters:</strong> <span id="guessed-letters">None yet</span></p>
-                <p id="message-area" class="message-area">Start guessing!</p>
-            </div>
-        </section>
-
-        <section class="card keyboard-card">
-            <h2>Letter Board</h2>
-            <div id="letter-board" class="letter-board"></div>
-        </section>
-    </main>
+        </footer>
+    </div>
 </body>
 </html>

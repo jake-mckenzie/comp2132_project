@@ -404,6 +404,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1.5rem;
 }
 
 /* -----------------
@@ -534,6 +535,7 @@ button:focus-visible {
   border: 2px solid var(--border-subtle);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
   padding: 1rem 1.1rem;
+  margin-top: 1rem;
 }
 
 .hangman-figure-wrap {
@@ -548,6 +550,27 @@ button:focus-visible {
   border: 1px solid var(--border-subtle);
   background: var(--background-alt);
   margin-bottom: 1rem;
+}
+
+.guess-panel {
+  display: flex;
+  margin: auto;
+  margin-top: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.letter-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(42px, 56px));
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.25rem auto 0;
+}
+
+.status-row {
+  display: grid;
+  gap: 0.5rem;
 }
 
 #hangman-image {
