@@ -94,3 +94,9 @@ button:focus-visible {
     background: var(--background-alt);
     margin-bottom: 1rem;
 }
+
+#hangman-image {
+    height: auto;
+    width: 100%;
+    max-width: 350px;
+}

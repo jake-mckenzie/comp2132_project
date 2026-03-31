@@ -1,5 +1,9 @@
 [
     {
+        "word": "jeff",
+        "hint": "The instructor of this course."
+    },
+    {
         "word": "javascript",
         "hint": "A programming language used to make web pages interactive."
     },

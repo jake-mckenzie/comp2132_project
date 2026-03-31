@@ -550,6 +550,12 @@ button:focus-visible {
   margin-bottom: 1rem;
 }
 
+#hangman-image {
+  height: auto;
+  width: 100%;
+  max-width: 350px;
+}
+
 .footer-inner {
   max-width: 1100px;
   margin: 0 auto;
