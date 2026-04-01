@@ -1,32 +1,25 @@
+// PAGE ELEMENTS
+const wordDisplay = document.getElementById("word-display");
+const hintText = document.getElementById("hint-text");
+const wrongCount = document.getElementById("wrong-count");
+const guessedLettersText = document.getElementById("guessed-letters");
+const messageArea = document.getElementById("message-area");
+const hangmanImage = document.getElementById("hangman-image");
+const playAgainButton = document.getElementById("play-again-button");
+const letterBoard = document.getElementById("letter-board");
+
 // GAME DATA OBJECT
-/*
-    This object stores all game data and settings in one place.
-*/
+//Stores all game data and settings in one place
 const game =
-{
-    // Array of word/hint objects loaded from the JSON file.
-    words: [],
-
-    // The current word the player is trying to guess.
-    selectedWord: "",
-
-    // The hint that matches the selected word.
-    selectedHint: "",
-
-    // Array of correctly guessed letters.
-    correctLetters: [],
-
-    // Array of incorrectly guessed letters.
-    wrongLetters: [],
-
-    // Maximum number of wrong guesses allowed before the player loses.
-    maxWrong: 6,
-
-    // Tracks whether the current game has ended.
-    isOver: false,
-
-    // Array of image file paths for each hangman stage.
-    hangmanImages:
+{    
+    words: [], // Array of word/hint objects loaded from the JSON file    
+    selectedWord: "", // The current word the player is trying to guess    
+    selectedHint: "", // The hint that matches the selected word    
+    correctLetters: [], // Array of correctly guessed letters    
+    wrongLetters: [], // Array of incorrectly guessed letters    
+    maxWrong: 6, // Maximum number of wrong guesses allowed before the player loses    
+    isOver: false, // Tracks whether the current game has ended    
+    hangmanImages: // Array of image file paths for each hangman stage
     [
         "../images/hangman-0.png",
         "../images/hangman-1.png",
@@ -39,40 +32,13 @@ const game =
 };
 
 
-// PAGE ELEMENTS
-
-// The page element that shows the hidden word with guessed letters revealed.
-const wordDisplay = document.getElementById("word-display");
-
-// The page element that displays the hint for the current word.
-const hintText = document.getElementById("hint-text");
-
-// The page element that displays the number of wrong guesses.
-const wrongCount = document.getElementById("wrong-count");
-
-// The page element that shows all letters the player has guessed.
-const guessedLettersText = document.getElementById("guessed-letters");
-
-// The page element used to show feedback messages to the player.
-const messageArea = document.getElementById("message-area");
-
-// The page element that displays the current hangman image.
-const hangmanImage = document.getElementById("hangman-image");
-
-// The button the player clicks to reset the game and begin a new round.
-const playAgainButton = document.getElementById("play-again-button");
-
-// The container that holds the clickable A-Z letter buttons.
-const letterBoard = document.getElementById("letter-board");
-
-
 // FUNCTIONS
 
-/*
-    This function loads the word and hint data from the JSON file using fetch().
-    Once the JSON data is loaded, it stores the words in the game object,
-    creates the letter buttons, and starts the first game.
-*/
+//Loads the word and hint data from the JSON file using fetch()
+//Once the JSON data is loaded,
+//it stores the words in the game object,
+//creates the letter buttons,
+//and starts the first game
 function loadWords()
 {
     fetch("../data/words.json")
@@ -99,11 +65,11 @@ function loadWords()
         });
 }
 
-/*
-    This function resets the game state and starts a brand new round.
-    It chooses a random word and hint, clears previous guesses,
-    resets the display, and enables the controls again.
-*/
+//Resets the game state and starts a brand new round
+//Chooses a random word and hint,
+// clears previous guesses,
+// resets the display,
+// and enables the controls again
 function startNewGame()
 {
     const randomIndex = Math.floor(Math.random() * game.words.length);
@@ -119,17 +85,16 @@ function startNewGame()
     wrongCount.textContent = "0";
     guessedLettersText.textContent = "None yet";
     messageArea.textContent = "Click a letter to start guessing!";
+    messageArea.classList.remove("wrong-highlight", "right-highlight");
 
     resetLetterButtons();
     updateWordDisplay();
     updateHangmanImage();
 }
 
-/*
-    This function updates the word area on the page.
-    It shows correctly guessed letters in their proper positions,
-    and shows underscores for letters that have not been guessed yet.
-*/
+//Updates the word area on the page
+//Shows correctly guessed letters, 
+//and underscores for letters that have not been guessed yet
 function updateWordDisplay()
 {
     let display = "";
@@ -151,16 +116,13 @@ function updateWordDisplay()
     wordDisplay.textContent = display.trim();
 }
 
-/*
-    This function updates the hangman image based on the number of wrong guesses.
-    It also restarts the fade-in animation each time the image changes
-    and updates the alt text based on the image filename.
-*/
+//Updates the hangman image based on the number of wrong guesses
+//Restarts the fade-in animation each time the image changes
+//and updates the alt text
 function updateHangmanImage()
 {
     const imageIndex = game.wrongLetters.length;
     const imagePath = game.hangmanImages[imageIndex];
-    const fileName = imagePath.split("/").pop();
 
     hangmanImage.src = imagePath;
     hangmanImage.alt = "Hangman drawing stage " + imageIndex;
@@ -170,10 +132,8 @@ function updateHangmanImage()
     hangmanImage.classList.add("fade-in");
 }
 
-/*
-    This function displays all guessed letters on the page.
-    It combines correct and wrong guesses into one list and sorts them alphabetically.
-*/
+//Displays all guessed letters on the page
+//Combines correct and wrong guesses into one list and sorts them alphabetically
 function updateGuessedLetters()
 {
     const allLetters = game.correctLetters.concat(game.wrongLetters);
@@ -186,13 +146,12 @@ function updateGuessedLetters()
     else
     {
         guessedLettersText.textContent = allLetters.join(", ").toUpperCase();
+        guessedLettersText.classList.add("wrong-highlight");
     }
 }
 
-/*
-    This function creates the clickable A-Z buttons shown in the letter board.
-    Each button sends its letter to processGuess() when clicked.
-*/
+//Creates the clickable A-Z buttons shown in the letter board
+//Each button sends its letter to processGuess() when clicked
 function createLetterButtons()
 {
     letterBoard.innerHTML = "";
@@ -216,10 +175,7 @@ function createLetterButtons()
     }
 }
 
-/*
-    This function re-enables all A-Z buttons for a new game
-    and removes their used styling.
-*/
+//Re-enables all A-Z buttons for a new game and removes their used styling
 function resetLetterButtons()
 {
     const buttons = letterBoard.querySelectorAll(".letter-button");
@@ -231,10 +187,8 @@ function resetLetterButtons()
     });
 }
 
-/*
-    This function disables one specific letter button after it has been guessed,
-    so the player cannot choose the same letter again in the same game.
-*/
+//Disables one specific letter button after it has been guessed,
+//preventing player from selecting same letter in the same game
 function disableLetterButton(letter)
 {
     const button = letterBoard.querySelector('[data-letter="' + letter + '"]');
@@ -246,10 +200,8 @@ function disableLetterButton(letter)
     }
 }
 
-/*
-    This function disables every letter button.
-    It is used when the game is over so the player cannot continue guessing.
-*/
+//Disables every letter button
+//Used when the game is over so the player cannot continue guessing
 function disableAllLetters()
 {
     const buttons = letterBoard.querySelectorAll(".letter-button");
@@ -260,23 +212,23 @@ function disableAllLetters()
     });
 }
 
-/*
-    This function handles the main game logic for one guessed letter.
-    It checks whether the letter was already guessed,
-    adds the letter to the correct or wrong list, updates the display,
-    and then checks if the game has been won or lost.
-*/
+//Handles the main game logic for one guessed letter
+//Checks whether the letter was already guessed,
+//adds the letter to the correct or wrong list, 
+//updates the display,and then checks if the game has been won or lost
 function processGuess(letter)
 {
     if (game.isOver)
     {
         messageArea.textContent = "Game over. Click Play Again to start a new game.";
+        messageArea.classList.toggle("wrong-highlight");
         return;
     }
 
     if (game.correctLetters.includes(letter) || game.wrongLetters.includes(letter))
     {
         messageArea.textContent = "You already guessed that letter.";
+        messageArea.classList.toggle("wrong-highlight");
         return;
     }
 
@@ -284,11 +236,15 @@ function processGuess(letter)
     {
         game.correctLetters.push(letter);
         messageArea.textContent = 'Good guess! "' + letter.toUpperCase() + '" is in the word.';
+        messageArea.classList.remove("wrong-highlight");
+        messageArea.classList.add("right-highlight");
     }
     else
     {
         game.wrongLetters.push(letter);
         messageArea.textContent = 'Sorry, "' + letter.toUpperCase() + '" is not in the word.';
+        messageArea.classList.remove("right-highlight");
+        messageArea.classList.add("wrong-highlight");
     }
 
     disableLetterButton(letter);
@@ -296,14 +252,13 @@ function processGuess(letter)
     updateHangmanImage();
     updateGuessedLetters();
     wrongCount.textContent = game.wrongLetters.length.toString();
+    wrongCount.classList.add("wrong-highlight");
     checkGameOver();
 }
 
-/*
-    This function checks whether the player has won or lost the game.
-    The player wins if every letter in the word has been guessed.
-    The player loses if the number of wrong guesses reaches the maximum allowed.
-*/
+//Checks whether the player has won or lost the game
+//Player wins if every letter in the word has been guessed
+//Player loses if the number of wrong guesses reaches the maximum allowed
 function checkGameOver()
 {
     let allFound = true;
@@ -321,6 +276,7 @@ function checkGameOver()
     {
         game.isOver = true;
         messageArea.textContent = "You won the game!";
+        messageArea.classList.add("right-highlight");
         disableGameControls();
         return;
     }
@@ -330,15 +286,13 @@ function checkGameOver()
         game.isOver = true;
         wordDisplay.textContent = game.selectedWord.toUpperCase().split("").join(" ");
         messageArea.textContent = 'You lost the game! The word was "' + game.selectedWord.toUpperCase() + '".';
+        messageArea.classList.add("wrong-highlight");
         disableGameControls();
     }
 }
 
-/*
-    This function disables all letter buttons.
-    It is called when the game ends so the player must click Play Again
-    before starting a new round.
-*/
+//Disables all letter buttons
+//Called when the game ends so the player must click Play Again before starting a new round
 function disableGameControls()
 {
     disableAllLetters();
@@ -346,18 +300,12 @@ function disableGameControls()
 
 
 // EVENT LISTENERS
-
-/*
-    This event starts a brand new game when the player clicks Play Again.
-*/
+//Starts a brand new game when the player clicks Play Again
 playAgainButton.addEventListener("click", function()
 {
     startNewGame();
 });
 
 // START GAME
-
-/*
-    Start the game by loading the JSON word list.
-*/
+//Load the JSON word list
 loadWords();

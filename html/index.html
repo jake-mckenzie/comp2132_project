@@ -31,8 +31,7 @@
     <div id="wrapper">
         <main class="site-shell">
             <section class="card hangman-card">
-                <h2>Guess the Word</h2>
-                <p class="muted">Click a letter from the Letter Board below.</p>
+                <h1>Hangman</h1>
                 <div class="hangman-figure-wrap">
                     <img
                         id="hangman-image"
@@ -40,15 +39,18 @@
                         src="../images/hangman-0.png"
                         alt="Hangman drawing stage 0">
                 </div>
-                <div class="status-row">
-                    <p><strong>Hint:</strong> <span id="hint-text">Loading...</span></p>
-                    <p><strong>Wrong Guesses:</strong> <span id="wrong-count">0</span> / 6</p>
-                </div>
-                <div id="word-display" class="word-display">_ _ _ _ _</div>
-                <div class="game-meta">
-                    <p><strong>Guessed Letters:</strong> <span id="guessed-letters">None yet</span></p>
-                    <p id="message-area" class="message-area">Start guessing!</p>
-                    <p class="muted">You can make up to 6 wrong guesses.</p>
+                <div class="status-center">
+                    <div class="status-row">
+                        <p><strong>Hint:</strong> <span id="hint-text">Loading...</span></p>
+                    </div>
+                    <div class="status-row">
+                        <p><strong>Wrong Guesses:</strong> <span id="wrong-count">0</span> / 6</p>
+                    </div>
+                    <div id="word-display" class="word-display">_ _ _ _ _</div>
+                    <div class="game-meta">
+                        <p><strong>Guessed Letters:</strong> <span id="guessed-letters">None yet</span></p>
+                        <p id="message-area" class="message-area">Start guessing!</p>
+                    </div>
                 </div>
                 <div class="keyboard-card">
                     <h2>Letter Board</h2>

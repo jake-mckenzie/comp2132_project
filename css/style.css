@@ -491,8 +491,9 @@ button:focus-visible {
 
 .site-shell {
   max-width: 1024px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 0.75rem 2.5rem;
+  padding: 0 0.75rem 1.25rem;
 }
 
 /* -----------------
@@ -535,7 +536,15 @@ button:focus-visible {
   border: 2px solid var(--border-subtle);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
   padding: 1rem 1.1rem;
-  margin-top: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* -----------------
+   HANGMAN GAME
+-------------------- */
+.hangman-card {
+  width: 100%;
+  max-width: 100%;
 }
 
 .hangman-figure-wrap {
@@ -569,14 +578,37 @@ button:focus-visible {
 }
 
 .status-row {
-  display: grid;
-  gap: 0.5rem;
+  margin: auto;
+  flex: auto;
+  text-align: center;
+  align-items: center;
+  align-content: center;
+}
+
+.status-center {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  align-items: center;
+  align-content: center;
+  text-align: center;
 }
 
 #hangman-image {
   height: auto;
   width: 100%;
   max-width: 350px;
+}
+
+/* -----------------
+   MISC CLASSES
+-------------------- */
+.right-highlight {
+  color: lightgreen;
+}
+
+.wrong-highlight {
+  color: var(--accent);
 }
 
 .footer-inner {
@@ -590,8 +622,8 @@ button:focus-visible {
 
 .site-footer {
   border-top: 1px solid var(--border-subtle);
-  padding: 1.4rem 1.25rem 2rem;
-  margin-top: 3rem;
+  padding: 1.4rem 1.25rem 1rem;
+  margin-top: 0.25rem;
   background: var(--bg);
 }
 
@@ -615,6 +647,13 @@ button:focus-visible {
   .status-row {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+  }
+  .hangman-card {
+    max-width: 750px;
+    margin: auto;
+  }
+  .card {
+    margin-top: 0.75rem;
   }
 }
 @media (min-width: 980px) {

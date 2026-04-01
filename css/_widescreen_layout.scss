@@ -16,6 +16,15 @@
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
     }
+
+    .hangman-card {
+        max-width: 750px;
+        margin: auto;
+    }
+
+    .card {
+        margin-top: 0.75rem;
+    }
 }
 
 @media (min-width: 980px) {

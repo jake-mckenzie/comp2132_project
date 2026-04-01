@@ -46,8 +46,9 @@ button:focus-visible {
 
 .site-shell {
     max-width: 1024px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 0.75rem 2.5rem;
+    padding: 0 0.75rem 1.25rem;
 }
 
 /* -----------------
@@ -84,7 +85,15 @@ button:focus-visible {
 .card {
     @include mixins.card-surface;
     padding: 1rem 1.1rem;
-    margin-top: 1rem;
+    margin-top: 0.25rem;
+}
+
+/* -----------------
+   HANGMAN GAME
+-------------------- */
+.hangman-card {
+  width: 100%;
+  max-width: 100%;
 }
 
 .hangman-figure-wrap {
@@ -114,12 +123,36 @@ button:focus-visible {
 }
 
 .status-row {
-    display: grid;
-    gap: 0.5rem;
+    margin: auto;
+    flex: auto;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+}
+
+.status-center {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+    align-content: center;
+    text-align: center;
 }
 
 #hangman-image {
     height: auto;
     width: 100%;
     max-width: 350px;
+}
+
+/* -----------------
+   MISC CLASSES
+-------------------- */
+
+.right-highlight{
+    color: lightgreen;
+}
+
+.wrong-highlight{
+    color: var(--accent);
 }
